@@ -1,5 +1,7 @@
 import 'package:todo_txt/helpers.dart';
 
+final RegExp metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
+
 class Task {
   bool completed;
   String title;
@@ -67,9 +69,9 @@ class Task {
         contexts.add(element.substring(1));
       } else if (element.startsWith('+')) {
         projects.add(element.substring(1));
-      } else if (element.contains(':')) {
-        var param = element.split(':');
-        params[param[0]] = param[1];
+      } else if (metadataRegex.hasMatch(element)) {
+        var match = metadataRegex.firstMatch(element)!;
+        params[match.group(1)!] = match.group(2)!;
       } else {
         title += ' $element';
       }

@@ -10,4 +10,18 @@ void main() {
     expect(task.title, 'Document task format');
     expect(task.project, ['TodoTxt']);
   });
+
+  test('element with multiple colons is not metadata (spec: only one colon)', () {
+    final task = Task.fromText('Call mom at 12:30:45');
+
+    expect(task.metadata, isEmpty);
+    expect(task.title, contains('12:30:45'));
+  });
+
+  test('metadata value may contain colons (e.g. due:12:00AM)', () {
+    final task = Task.fromText('Call mom due:12:00AM');
+
+    expect(task.metadata, {'due': '12:00AM'});
+    expect(task.title, 'Call mom');
+  });
 }

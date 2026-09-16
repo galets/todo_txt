@@ -187,3 +187,5 @@ Tool developers may define additional formatting rules for extra metadata.
 Developers should use the format `key:value` to define additional metadata (e.g. `due:2010-01-02` as a due date).
 
 Both `key` and `value` must consist of non-whitespace characters, which are not colons. Only one colon separates the `key` and `value`.
+
+key should start with a letter to avoid conflict with time (e.g.: "12:00" is a time, not metadata)
