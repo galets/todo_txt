@@ -51,11 +51,14 @@ class Task {
       elements.removeAt(0);
     }
 
-    // creationDate comes directly after priority or completion
-    if ((priority != null || completionDate != null) &&
-        isDateString(elements[0])) {
-      creationDate = DateTime.tryParse(elements[0]);
-      elements.removeAt(0);
+    // creationDate comes directly after priority/completion,
+    // or first when there is no priority (spec Rule 2).
+    // For completed tasks it requires a completion date before it.
+    if (elements.isNotEmpty && isDateString(elements[0])) {
+      if (!completed || completionDate != null) {
+        creationDate = DateTime.tryParse(elements[0]);
+        elements.removeAt(0);
+      }
     }
 
     // remaining elements can be parsed on easy for loop @ -> context + -> projet contains : -> key/value pair
