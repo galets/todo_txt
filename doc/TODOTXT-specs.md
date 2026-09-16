@@ -94,6 +94,7 @@ Really gotta call Mom (A) @phone @someday
 (B)->Submit TPS report
 ```
 
+If priority if specified ass a lowercase letter, it must be automatically converted to uppercase
 
 ### Rule 2: A task's creation date may optionally appear directly after priority and a space.
 
@@ -153,6 +154,7 @@ This is a complete task:
 
 ```
 x 2011-03-03 Call Mom
+x Create a new project
 ```
 
 These are not complete tasks.
@@ -165,7 +167,6 @@ X 2012-01-01 Make resolutions
 
 We use a lowercase x so that completed tasks sort to the bottom of the task list using standard sort tools.
 
-
 ### Rule 2: The date of completion appears directly after the x, separated by a space.
 
 For example:
@@ -176,9 +177,9 @@ x 2011-03-02 2011-03-01 Review Tim's pull request +TodoTxtTouch @github
 
 If you’ve prepended the creation date to your task, on completion it will appear directly after the completion date. This is so your completed tasks sort by date using standard sort tools. Many Todo.txt clients discard priority on task completion. To preserve it, use the `key:value` format described below (e.g. `pri:A`)
 
-With the completed date (required), if you've used the prepended date (optional), you can calculate how many days it took to complete a task.
+With the completed date, if you've used the prepended date (optional), you can calculate how many days it took to complete a task.
 
-
+It is acceptable for completed task to have no creation and completion dates.
 
 ## Additional File Format Definitions
 
