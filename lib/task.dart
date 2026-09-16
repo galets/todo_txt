@@ -2,6 +2,7 @@ import 'package:todo_txt/helpers.dart';
 
 final RegExp metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
 final RegExp priorityRegex = RegExp(r'^[A-Za-z]$');
+final RegExp dateLikeRegex = RegExp(r'^\d{4}-\d{1,2}-\d{1,2}$');
 
 class Task {
   bool _completed;
@@ -100,7 +101,9 @@ class Task {
       completed = true;
       elements.removeAt(0);
       // followed by completion Date
-      if (elements.isNotEmpty && isDateString(elements[0])) {
+      if (elements.isNotEmpty &&
+          (isDateString(elements[0]) ||
+              dateLikeRegex.hasMatch(elements[0]))) {
         completionDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
@@ -114,7 +117,11 @@ class Task {
     // creationDate comes directly after priority/completion,
     // or first when there is no priority (spec Rule 2).
     // For completed tasks it requires a completion date before it.
-    if (elements.isNotEmpty && isDateString(elements[0])) {
+    // A date-like token in this slot that is not a valid YYYY-MM-DD
+    // date is a malformed date, not title text.
+    if (elements.isNotEmpty &&
+        (isDateString(elements[0]) ||
+            dateLikeRegex.hasMatch(elements[0]))) {
       if (!completed || completionDate != null) {
         creationDate = parseStrictDate(elements[0]);
         elements.removeAt(0);

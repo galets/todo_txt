@@ -151,6 +151,15 @@ void main() {
         throwsFormatException);
   });
 
+  test(
+      'malformed date-like token in date position throws (spec: YYYY-MM-DD format)',
+      () {
+    expect(
+        () => Task.fromText('2011-13-01 Document task format'),
+        throwsFormatException);
+    expect(() => Task.fromText('x 2011-13-01 Foo'), throwsFormatException);
+  });
+
   test('completed task preserves priority via pri metadata', () {
     final task =
         Task.fromText('x 2026-05-03 2026-05-01 pri:A Spray mosquito poison');
