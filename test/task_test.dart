@@ -24,4 +24,13 @@ void main() {
     expect(task.metadata, {'due': '12:00AM'});
     expect(task.title, 'Call mom');
   });
+
+  test('bare @ and + are not context/project (spec Rule 3: must contain non-whitespace)', () {
+    final task = Task.fromText('Call Mom @ +');
+
+    expect(task.context, isEmpty);
+    expect(task.project, isEmpty);
+    expect(task.title, contains('@'));
+    expect(task.title, contains('+'));
+  });
 }

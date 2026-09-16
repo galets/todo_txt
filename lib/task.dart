@@ -65,9 +65,9 @@ class Task {
 
     // remaining elements can be parsed on easy for loop @ -> context + -> projet contains : -> key/value pair
     for (var element in elements) {
-      if (element.startsWith('@')) {
+      if (element.startsWith('@') && element.length > 1) {
         contexts.add(element.substring(1));
-      } else if (element.startsWith('+')) {
+      } else if (element.startsWith('+') && element.length > 1) {
         projects.add(element.substring(1));
       } else if (metadataRegex.hasMatch(element)) {
         var match = metadataRegex.firstMatch(element)!;
