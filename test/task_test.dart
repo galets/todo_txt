@@ -122,6 +122,20 @@ void main() {
     expect(task.completionDate, isNull);
   });
 
+  test('dateless completed task with creationDate round-trips dates in order (spec: x completionDate creationDate)', () {
+    var task = Task.fromText('x completed task');
+    // Dates are read-only; copyWith stamps completionDate so the
+    // creation date can never slip into the completion slot.
+    task = task.copyWith(creationDate: DateTime(2011, 3, 1));
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final reparsed = Task.fromText(task.toText());
+
+    expect(reparsed.completionDate, today);
+    expect(reparsed.creationDate, DateTime(2011, 3, 1));
+  });
+
   test('completed task with completion date is parsed and serialized', () {
     final task = Task.fromText('x 2011-03-02 Review pull request');
 

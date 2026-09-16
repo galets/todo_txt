@@ -12,12 +12,14 @@ class Task {
   String title;
 
   int? _priority;
+  DateTime? _completionDate;
+  DateTime? _creationDate;
 
-  /// Completion date (`x YYYY-MM-DD ...`); set to today when completed.
-  DateTime? completionDate;
+  /// Completion date (`x YYYY-MM-DD ...`); null when open or dateless.
+  DateTime? get completionDate => _completionDate;
 
   /// Creation date, directly after priority or leading the line.
-  DateTime? creationDate;
+  DateTime? get creationDate => _creationDate;
 
   /// Project tags without the `+` prefix (spec Rule 3).
   List<String> project;
@@ -36,14 +38,14 @@ class Task {
     final wasCompleted = _completed;
     _completed = value;
     if (value) {
-      completionDate ??= _today();
+      _completionDate ??= _today();
       if (_priority != null) {
         metadata['pri'] = priority!;
       } else {
         metadata.remove('pri');
       }
     } else {
-      completionDate = null;
+      _completionDate = null;
       // Only strip preserved priority when transitioning completed -> open.
       // Constructing/parsing an open task must keep a literal pri entry.
       if (wasCompleted) {
@@ -87,12 +89,14 @@ class Task {
     this.title, {
     bool completed = false,
     String? priority,
-    this.completionDate,
-    this.creationDate,
+    DateTime? completionDate,
+    DateTime? creationDate,
     this.project = const [],
     this.context = const [],
     Map<String, String> metadata = const {},
   })  : _completed = false,
+        _completionDate = completionDate,
+        _creationDate = creationDate,
         metadata = Map.of(metadata) {
     if (title.trim().isEmpty) {
       throw ArgumentError.value(title, 'title', 'Must not be empty');
@@ -183,7 +187,7 @@ class Task {
     // Parsed completed tasks without any date (e.g. "x completed task")
     // are the only case allowed to keep a null completionDate.
     if (completed && completionDate == null) {
-      task.completionDate = null;
+      task._completionDate = null;
     }
     return task;
   }
