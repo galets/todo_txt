@@ -143,4 +143,11 @@ void main() {
     expect(task.title, 'Review pull request');
     expect(task.toText(), 'x 2011-03-02 2011-03-01 Review pull request');
   });
+
+  test(
+      'invalid calendar date in date position throws (spec: YYYY-MM-DD must be a real date)',
+      () {
+    expect(() => Task.fromText('2011-02-31 Document task format'),
+        throwsFormatException);
+  });
 }

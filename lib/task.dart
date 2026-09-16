@@ -83,7 +83,7 @@ class Task {
       elements.removeAt(0);
       // followed by completion Date
       if (elements.isNotEmpty && isDateString(elements[0])) {
-        completionDate = DateTime.tryParse(elements[0]);
+        completionDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
       // else if prio
@@ -98,7 +98,7 @@ class Task {
     // For completed tasks it requires a completion date before it.
     if (elements.isNotEmpty && isDateString(elements[0])) {
       if (!completed || completionDate != null) {
-        creationDate = DateTime.tryParse(elements[0]);
+        creationDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
     }
