@@ -16,11 +16,22 @@ class Task {
   bool get completed => _completed;
 
   set completed(bool value) {
+    final wasCompleted = _completed;
     _completed = value;
     if (value) {
       completionDate ??= _today();
+      if (_priority != null) {
+        metadata['pri'] = priority!;
+      } else {
+        metadata.remove('pri');
+      }
     } else {
       completionDate = null;
+      // Only strip preserved priority when transitioning completed -> open.
+      // Constructing/parsing an open task must keep a literal pri entry.
+      if (wasCompleted) {
+        metadata.remove('pri');
+      }
     }
   }
 
@@ -35,6 +46,9 @@ class Task {
   set priority(String? value) {
     if (value == null) {
       _priority = null;
+      if (_completed) {
+        metadata.remove('pri');
+      }
       return;
     }
     if (!priorityRegex.hasMatch(value)) {
@@ -42,6 +56,9 @@ class Task {
           value, 'priority', 'Must be a single alpha character (A-Z)');
     }
     _priority = value.toUpperCase().codeUnitAt(0);
+    if (_completed) {
+      metadata['pri'] = priority!;
+    }
   }
 
   Task(
@@ -52,8 +69,9 @@ class Task {
     this.creationDate,
     this.project = const [],
     this.context = const [],
-    this.metadata = const {},
-  }) : _completed = false {
+    Map<String, String> metadata = const {},
+  }) : _completed = false,
+       metadata = Map.of(metadata) {
     if (title.trim().isEmpty) {
       throw ArgumentError.value(title, 'title', 'Must not be empty');
     }
@@ -118,6 +136,15 @@ class Task {
     }
 
     title = title.trim();
+
+    // Completed tasks preserve priority in pri metadata; incomplete tasks
+    // keep a literal pri entry as plain metadata.
+    if (completed) {
+      final pri = params.remove('pri');
+      if (pri != null && priority == null && priorityRegex.hasMatch(pri)) {
+        priority = pri.toUpperCase();
+      }
+    }
 
     final task = Task(title,
         completed: completed,

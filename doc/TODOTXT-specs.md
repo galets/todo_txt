@@ -175,7 +175,14 @@ For example:
 x 2011-03-02 2011-03-01 Review Tim's pull request +TodoTxtTouch @github
 ```
 
-If you’ve prepended the creation date to your task, on completion it will appear directly after the completion date. This is so your completed tasks sort by date using standard sort tools. Many Todo.txt clients discard priority on task completion. To preserve it, use the `key:value` format described below (e.g. `pri:A`)
+If you’ve prepended the creation date to your task, on completion it will appear directly after the completion date. This is so your completed tasks sort by date using standard sort tools. Many Todo.txt clients discard priority on task completion.
+
+To preserve it, use the `key:value` format described below (e.g. `pri:A`):
+
+* A completed task parses `pri:A` into priority and serializes priority back as `pri:A` instead of `(A)`\
+* completing a task moves its priority into `pri` metadata (removed if no priority)
+* uncompleting restores `(A)` and drops `pri`
+* an open task treats `pri` as plain metadata.
 
 With the completed date, if you've used the prepended date (optional), you can calculate how many days it took to complete a task.
 

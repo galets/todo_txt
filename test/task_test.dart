@@ -150,4 +150,52 @@ void main() {
     expect(() => Task.fromText('2011-02-31 Document task format'),
         throwsFormatException);
   });
+
+  test('completed task preserves priority via pri metadata', () {
+    final task =
+        Task.fromText('x 2026-05-03 2026-05-01 pri:A Spray mosquito poison');
+    expect(task.completed, true);
+    expect(task.priority, 'A');
+    expect(task.metadata['pri'], 'A');
+    expect(task.toText(),
+        'x 2026-05-03 2026-05-01 Spray mosquito poison pri:A');
+  });
+
+  test('incomplete task ignores pri metadata for priority', () {
+    final task = Task.fromText('(B) Call Mom pri:A');
+    expect(task.completed, false);
+    expect(task.priority, 'B');
+    expect(task.metadata, {'pri': 'A'});
+  });
+
+  test('incomplete toText keeps (A) priority prefix', () {
+    final task = Task.fromText('(A) Call Mom');
+    expect(task.toText(), '(A) Call Mom');
+  });
+
+  test('completing a task moves priority into pri metadata', () {
+    final task = Task.fromText('(A) Call Mom');
+    task.completed = true;
+    expect(task.priority, 'A');
+    expect(task.metadata['pri'], 'A');
+    expect(task.toText(), startsWith('x '));
+    expect(task.toText(), contains('pri:A'));
+    expect(task.toText(), isNot(contains('(A)')));
+  });
+
+  test('completing a priority-less task adds no pri metadata', () {
+    final task = Task.fromText('Call Mom');
+    task.completed = true;
+    expect(task.priority, isNull);
+    expect(task.metadata.containsKey('pri'), false);
+  });
+
+  test('uncompleting a task removes pri metadata', () {
+    final task =
+        Task.fromText('x 2026-05-03 2026-05-01 pri:A Spray mosquito poison');
+    task.completed = false;
+    expect(task.priority, 'A');
+    expect(task.metadata.containsKey('pri'), false);
+    expect(task.toText(), startsWith('(A) '));
+  });
 }
