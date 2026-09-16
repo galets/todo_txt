@@ -47,6 +47,10 @@ void main() {
     expect(pathToPlatformPath(path), expected);
   }, onPlatform: {'windows || browser': const Skip('Not windows only test')});
 
+  test('isDate rejects string with prefix before date (must be exact YYYY-MM-DD)', () {
+    expect(isDateString('ab2011-03-02'), false);
+  });
+
   test('dateToDateString formats as YYYY-MM-DD', () {
     final date = DateTime(2011, 3, 2);
     expect(dateToDateString(date), '2011-03-02');

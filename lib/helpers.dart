@@ -1,7 +1,7 @@
 import 'dart:io';
 
 RegExp dateRegex =
-    RegExp(r'(\d{4})[\-](0?[1-9]|1[012])[\-](0?[1-9]|[12][0-9]|3[01])$');
+    RegExp(r'^(\d{4})[\-](0?[1-9]|1[012])[\-](0?[1-9]|[12][0-9]|3[01])$');
 
 bool isPriorityString(String prioString) {
   return prioString.length == 3 &&
