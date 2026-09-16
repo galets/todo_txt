@@ -60,4 +60,10 @@ void main() {
     final date = DateTime(2011, 3, 2);
     expect(isDateString(dateToDateString(date)), true);
   });
+
+  test('isDate rejects non-zero-padded date (must be exact YYYY-MM-DD)', () {
+    expect(isDateString('2011-3-2'), false);
+    expect(isDateString('2011-03-2'), false);
+    expect(isDateString('2011-3-02'), false);
+  });
 }
