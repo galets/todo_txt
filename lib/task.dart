@@ -1,27 +1,45 @@
 import 'package:todo_txt/helpers.dart';
 
 final RegExp metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
+final RegExp priorityRegex = RegExp(r'^[A-Za-z]$');
 
 class Task {
   bool completed;
   String title;
-  int? priority;
+  int? _priority;
   DateTime? completionDate;
   DateTime? creationDate;
   List<String> project;
   List<String> context;
   Map<String, String> metadata;
 
+  String? get priority =>
+      _priority == null ? null : String.fromCharCode(_priority!);
+
+  set priority(String? value) {
+    if (value == null) {
+      _priority = null;
+      return;
+    }
+    if (!priorityRegex.hasMatch(value)) {
+      throw ArgumentError.value(
+          value, 'priority', 'Must be a single alpha character (A-Z)');
+    }
+    _priority = value.toUpperCase().codeUnitAt(0);
+  }
+
   Task(
     this.title, {
     this.completed = false,
-    this.priority,
+    String? priority,
     this.completionDate,
     this.creationDate,
     this.project = const [],
     this.context = const [],
     this.metadata = const {},
-  });
+  }) {
+    this.priority = priority;
+  }
 
   /// check positional args and remove them from list: completed, priority, creation-date
   /// incompleted example: (A) <- Priority 2022-03-21 <- creationDate ...
@@ -31,7 +49,7 @@ class Task {
     var elements = todoLine.split(' ');
     var completed = false;
     var title = '';
-    int? priority;
+    String? priority;
     DateTime? creationDate;
     DateTime? completionDate;
     var projects = <String>[];
@@ -51,7 +69,7 @@ class Task {
       // else if prio
     } else if (isPriorityString(elements[0]) ||
         isPriorityString(elements[0].toUpperCase())) {
-      priority = elements[0].toUpperCase().codeUnitAt(1);
+      priority = elements[0].toUpperCase()[1];
       elements.removeAt(0);
     }
 
@@ -94,7 +112,7 @@ class Task {
   Task copyWith({
     String? title,
     bool? completed,
-    int? priority,
+    String? priority,
     DateTime? creationDate,
     DateTime? completionDate,
     List<String>? project,
@@ -122,7 +140,7 @@ class Task {
         text += ' ${dateToDateString(completionDate!)}';
       }
     } else if (priority != null) {
-      text += '(${String.fromCharCode(priority!)})';
+      text += '($priority)';
     }
 
     if (creationDate != null) {
