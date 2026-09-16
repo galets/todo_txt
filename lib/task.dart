@@ -41,8 +41,7 @@ class Task {
     return DateTime(now.year, now.month, now.day);
   }
 
-  String? get priority =>
-      _priority == null ? null : String.fromCharCode(_priority!);
+  String? get priority => _priority == null ? null : String.fromCharCode(_priority!);
 
   set priority(String? value) {
     if (value == null) {
@@ -54,7 +53,10 @@ class Task {
     }
     if (!priorityRegex.hasMatch(value)) {
       throw ArgumentError.value(
-          value, 'priority', 'Must be a single alpha character (A-Z)');
+        value,
+        'priority',
+        'Must be a single alpha character (A-Z)',
+      );
     }
     _priority = value.toUpperCase().codeUnitAt(0);
     if (_completed) {
@@ -71,8 +73,8 @@ class Task {
     this.project = const [],
     this.context = const [],
     Map<String, String> metadata = const {},
-  }) : _completed = false,
-       metadata = Map.of(metadata) {
+  })  : _completed = false,
+        metadata = Map.of(metadata) {
     if (title.trim().isEmpty) {
       throw ArgumentError.value(title, 'title', 'Must not be empty');
     }
@@ -101,15 +103,12 @@ class Task {
       completed = true;
       elements.removeAt(0);
       // followed by completion Date
-      if (elements.isNotEmpty &&
-          (isDateString(elements[0]) ||
-              dateLikeRegex.hasMatch(elements[0]))) {
+      if (elements.isNotEmpty && (isDateString(elements[0]) || dateLikeRegex.hasMatch(elements[0]))) {
         completionDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
       // else if prio
-    } else if (isPriorityString(elements[0]) ||
-        isPriorityString(elements[0].toUpperCase())) {
+    } else if (isPriorityString(elements[0]) || isPriorityString(elements[0].toUpperCase())) {
       priority = elements[0].toUpperCase()[1];
       elements.removeAt(0);
     }
@@ -119,9 +118,7 @@ class Task {
     // For completed tasks it requires a completion date before it.
     // A date-like token in this slot that is not a valid YYYY-MM-DD
     // date is a malformed date, not title text.
-    if (elements.isNotEmpty &&
-        (isDateString(elements[0]) ||
-            dateLikeRegex.hasMatch(elements[0]))) {
+    if (elements.isNotEmpty && (isDateString(elements[0]) || dateLikeRegex.hasMatch(elements[0]))) {
       if (!completed || completionDate != null) {
         creationDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
@@ -153,14 +150,16 @@ class Task {
       }
     }
 
-    final task = Task(title,
-        completed: completed,
-        priority: priority,
-        creationDate: creationDate,
-        completionDate: completionDate,
-        context: contexts,
-        project: projects,
-        metadata: params);
+    final task = Task(
+      title,
+      completed: completed,
+      priority: priority,
+      creationDate: creationDate,
+      completionDate: completionDate,
+      context: contexts,
+      project: projects,
+      metadata: params,
+    );
     // Parsed completed tasks without any date (e.g. "x completed task")
     // are the only case allowed to keep a null completionDate.
     if (completed && completionDate == null) {

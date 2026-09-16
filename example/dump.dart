@@ -16,10 +16,7 @@ Future<void> main(List<String> args) async {
   if (args.isNotEmpty) {
     lines = await File(args[0]).readAsLines();
   } else {
-    lines = await stdin
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())
-        .toList();
+    lines = await stdin.transform(utf8.decoder).transform(const LineSplitter()).toList();
   }
 
   for (final rawLine in lines) {
@@ -27,7 +24,7 @@ Future<void> main(List<String> args) async {
     if (line.isEmpty) continue;
     final task = Task.fromText(line);
 
-    print('${task.toText()}');
+    print(task.toText());
 
     void field(String name, String value) => print('  * $name: $value');
 

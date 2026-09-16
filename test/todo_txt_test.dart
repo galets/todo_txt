@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:test/test.dart';
 import 'package:todo_txt/todo_txt.dart';
 
-const windowsPath = ".\\test\\resources\\todo.txt";
-const path = "./test/resources/todo.txt";
+const windowsPath = '.\\test\\resources\\todo.txt';
+const path = './test/resources/todo.txt';
 
 void main() {
   test('Try create a new TodoTxt file', () {
@@ -22,11 +22,12 @@ void main() {
     var tasks = [Task('Task 1')];
 
     expect(
-        () => TodoTxt.create(
-            tasks: tasks,
-            path:
-                "C:\\Users\\Adrian\\Projects\\todo_txt\\test\\resources\\todo.csv"),
-        throwsA(isA<FormatException>()));
+      () => TodoTxt.create(
+        tasks: tasks,
+        path: 'C:\\Users\\Adrian\\Projects\\todo_txt\\test\\resources\\todo.csv',
+      ),
+      throwsA(isA<FormatException>()),
+    );
   });
 
   test('read from file', () {

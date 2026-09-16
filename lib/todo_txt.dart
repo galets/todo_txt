@@ -16,8 +16,8 @@ class TodoTxt {
   /// read existing Tasks from File at [path]
   factory TodoTxt.readFromFile({required String path}) {
     var osPath = pathToPlatformPath(path);
-    if (!osPath.endsWith(".txt")) {
-      throw const FormatException("File has to end with .txt");
+    if (!osPath.endsWith('.txt')) {
+      throw const FormatException('File has to end with .txt');
     }
     try {
       var file = File(osPath);
@@ -39,8 +39,8 @@ class TodoTxt {
   /// [tasks] List of [Task] to store into the file specified by the [path]
   factory TodoTxt.create({required List<Task> tasks, required String path}) {
     var osPath = pathToPlatformPath(path);
-    if (!osPath.endsWith(".txt")) {
-      throw const FormatException("File has to end with .txt");
+    if (!osPath.endsWith('.txt')) {
+      throw const FormatException('File has to end with .txt');
     }
     if (File(osPath).existsSync()) {
       throw Exception('Specified file $osPath already exists');

@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
 import 'package:todo_txt/helpers.dart';
-import 'package:todo_txt/task.dart';
 
 void main() {
   test('isPriorityString validPrioString returnTrue', () {
@@ -33,19 +32,27 @@ void main() {
     expect(isDateString(dateString), false);
   });
 
-  test('Linux path seperator to Windows path Seperator', () {
-    var path = 'C:/this/is/a/path.txt';
-    var expected = 'C:\\this\\is\\a\\path.txt';
+  test(
+    'Linux path seperator to Windows path Seperator',
+    () {
+      var path = 'C:/this/is/a/path.txt';
+      var expected = 'C:\\this\\is\\a\\path.txt';
 
-    expect(pathToPlatformPath(path), expected);
-  }, onPlatform: {'!windows || browser': const Skip('Windows only test')});
+      expect(pathToPlatformPath(path), expected);
+    },
+    onPlatform: {'!windows || browser': const Skip('Windows only test')},
+  );
 
-  test('Windows path seperator to Posix path Seperator', () {
-    var path = 'C:\\this\\is\\a\\path.txt';
-    var expected = 'C:/this/is/a/path.txt';
+  test(
+    'Windows path seperator to Posix path Seperator',
+    () {
+      var path = 'C:\\this\\is\\a\\path.txt';
+      var expected = 'C:/this/is/a/path.txt';
 
-    expect(pathToPlatformPath(path), expected);
-  }, onPlatform: {'windows || browser': const Skip('Not windows only test')});
+      expect(pathToPlatformPath(path), expected);
+    },
+    onPlatform: {'windows || browser': const Skip('Not windows only test')},
+  );
 
   test('isDate rejects string with prefix before date (must be exact YYYY-MM-DD)', () {
     expect(isDateString('ab2011-03-02'), false);

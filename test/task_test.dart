@@ -10,8 +10,7 @@ void main() {
     expect(task.project, ['TodoTxt']);
   });
 
-  test('element with multiple colons is not metadata (spec: only one colon)',
-      () {
+  test('element with multiple colons is not metadata (spec: only one colon)', () {
     final task = Task.fromText('Call mom at 12:30:45');
 
     expect(task.metadata, isEmpty);
@@ -25,9 +24,7 @@ void main() {
     expect(task.title, 'Call mom');
   });
 
-  test(
-      'bare @ and + are not context/project (spec Rule 3: must contain non-whitespace)',
-      () {
+  test('bare @ and + are not context/project (spec Rule 3: must contain non-whitespace)', () {
     final task = Task.fromText('Call Mom @ +');
 
     expect(task.context, isEmpty);
@@ -36,8 +33,7 @@ void main() {
     expect(task.title, contains('+'));
   });
 
-  test('lone x is not a completed task (spec: x must be followed by a space)',
-      () {
+  test('lone x is not a completed task (spec: x must be followed by a space)', () {
     final task = Task.fromText('x');
 
     expect(task.completed, false);
@@ -73,8 +69,7 @@ void main() {
     expect(() => Task('x', priority: 'AB'), throwsArgumentError);
   });
 
-  test('toText uses single spaces when context list is empty (spec ordering)',
-      () {
+  test('toText uses single spaces when context list is empty (spec ordering)', () {
     final task = Task('Hello', project: ['P']);
 
     expect(task.toText(), 'Hello +P');
@@ -89,8 +84,11 @@ void main() {
   test(
       'completed toText with only creationDate does not emit it as completion date (spec ordering: x completionDate creationDate)',
       () {
-    final task = Task('Foo',
-        completed: true, creationDate: DateTime(2011, 3, 1));
+    final task = Task(
+      'Foo',
+      completed: true,
+      creationDate: DateTime(2011, 3, 1),
+    );
     // creating with completed:true auto-sets completionDate to today,
     // so creationDate stays in the creation slot on round-trip.
     final now = DateTime.now();
@@ -144,30 +142,30 @@ void main() {
     expect(task.toText(), 'x 2011-03-02 2011-03-01 Review pull request');
   });
 
-  test(
-      'invalid calendar date in date position throws (spec: YYYY-MM-DD must be a real date)',
-      () {
-    expect(() => Task.fromText('2011-02-31 Document task format'),
-        throwsFormatException);
+  test('invalid calendar date in date position throws (spec: YYYY-MM-DD must be a real date)', () {
+    expect(
+      () => Task.fromText('2011-02-31 Document task format'),
+      throwsFormatException,
+    );
   });
 
-  test(
-      'malformed date-like token in date position throws (spec: YYYY-MM-DD format)',
-      () {
+  test('malformed date-like token in date position throws (spec: YYYY-MM-DD format)', () {
     expect(
-        () => Task.fromText('2011-13-01 Document task format'),
-        throwsFormatException);
+      () => Task.fromText('2011-13-01 Document task format'),
+      throwsFormatException,
+    );
     expect(() => Task.fromText('x 2011-13-01 Foo'), throwsFormatException);
   });
 
   test('completed task preserves priority via pri metadata', () {
-    final task =
-        Task.fromText('x 2026-05-03 2026-05-01 pri:A Spray mosquito poison');
+    final task = Task.fromText('x 2026-05-03 2026-05-01 pri:A Spray mosquito poison');
     expect(task.completed, true);
     expect(task.priority, 'A');
     expect(task.metadata['pri'], 'A');
-    expect(task.toText(),
-        'x 2026-05-03 2026-05-01 Spray mosquito poison pri:A');
+    expect(
+      task.toText(),
+      'x 2026-05-03 2026-05-01 Spray mosquito poison pri:A',
+    );
   });
 
   test('incomplete task ignores pri metadata for priority', () {
@@ -200,8 +198,7 @@ void main() {
   });
 
   test('uncompleting a task removes pri metadata', () {
-    final task =
-        Task.fromText('x 2026-05-03 2026-05-01 pri:A Spray mosquito poison');
+    final task = Task.fromText('x 2026-05-03 2026-05-01 pri:A Spray mosquito poison');
     task.completed = false;
     expect(task.priority, 'A');
     expect(task.metadata.containsKey('pri'), false);
