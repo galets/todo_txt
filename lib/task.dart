@@ -38,6 +38,9 @@ class Task {
     this.context = const [],
     this.metadata = const {},
   }) {
+    if (title.trim().isEmpty) {
+      throw ArgumentError.value(title, 'title', 'Must not be empty');
+    }
     this.priority = priority;
   }
 

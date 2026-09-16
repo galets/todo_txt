@@ -79,4 +79,10 @@ void main() {
 
     expect(task.toText(), 'Hello +P');
   });
+
+  test('empty title is rejected (a task must have description text)', () {
+    expect(() => Task('', completed: true), throwsArgumentError);
+    expect(() => Task('   '), throwsArgumentError);
+    expect(() => Task.fromText('x '), throwsArgumentError);
+  });
 }
