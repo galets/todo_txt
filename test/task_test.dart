@@ -40,4 +40,11 @@ void main() {
     expect(task.completed, false);
     expect(task.title, 'x');
   });
+
+  test('lowercase priority is converted to uppercase (spec Rule 1)', () {
+    final task = Task.fromText('(b) Get back to the boss');
+
+    expect(task.priority, 'B'.codeUnitAt(0));
+    expect(task.title, 'Get back to the boss');
+  });
 }

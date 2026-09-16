@@ -49,8 +49,9 @@ class Task {
         elements.removeAt(0);
       }
       // else if prio
-    } else if (isPriorityString(elements[0])) {
-      priority = elements[0].codeUnitAt(1);
+    } else if (isPriorityString(elements[0]) ||
+        isPriorityString(elements[0].toUpperCase())) {
+      priority = elements[0].toUpperCase().codeUnitAt(1);
       elements.removeAt(0);
     }
 
