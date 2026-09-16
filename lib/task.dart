@@ -4,7 +4,7 @@ final RegExp metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
 final RegExp priorityRegex = RegExp(r'^[A-Za-z]$');
 
 class Task {
-  bool completed;
+  bool _completed;
   String title;
   int? _priority;
   DateTime? completionDate;
@@ -12,6 +12,22 @@ class Task {
   List<String> project;
   List<String> context;
   Map<String, String> metadata;
+
+  bool get completed => _completed;
+
+  set completed(bool value) {
+    _completed = value;
+    if (value) {
+      completionDate ??= _today();
+    } else {
+      completionDate = null;
+    }
+  }
+
+  static DateTime _today() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
 
   String? get priority =>
       _priority == null ? null : String.fromCharCode(_priority!);
@@ -30,18 +46,19 @@ class Task {
 
   Task(
     this.title, {
-    this.completed = false,
+    bool completed = false,
     String? priority,
     this.completionDate,
     this.creationDate,
     this.project = const [],
     this.context = const [],
     this.metadata = const {},
-  }) {
+  }) : _completed = false {
     if (title.trim().isEmpty) {
       throw ArgumentError.value(title, 'title', 'Must not be empty');
     }
     this.priority = priority;
+    this.completed = completed;
   }
 
   /// check positional args and remove them from list: completed, priority, creation-date
@@ -102,7 +119,7 @@ class Task {
 
     title = title.trim();
 
-    return Task(title,
+    final task = Task(title,
         completed: completed,
         priority: priority,
         creationDate: creationDate,
@@ -110,6 +127,12 @@ class Task {
         context: contexts,
         project: projects,
         metadata: params);
+    // Parsed completed tasks without any date (e.g. "x completed task")
+    // are the only case allowed to keep a null completionDate.
+    if (completed && completionDate == null) {
+      task.completionDate = null;
+    }
+    return task;
   }
 
   Task copyWith({

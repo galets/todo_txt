@@ -85,4 +85,62 @@ void main() {
     expect(() => Task('   '), throwsArgumentError);
     expect(() => Task.fromText('x '), throwsArgumentError);
   });
+
+  test(
+      'completed toText with only creationDate does not emit it as completion date (spec ordering: x completionDate creationDate)',
+      () {
+    final task = Task('Foo',
+        completed: true, creationDate: DateTime(2011, 3, 1));
+    // creating with completed:true auto-sets completionDate to today,
+    // so creationDate stays in the creation slot on round-trip.
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    expect(task.completionDate, today);
+
+    final reparsed = Task.fromText(task.toText());
+
+    expect(reparsed.completionDate, today);
+    expect(reparsed.creationDate, DateTime(2011, 3, 1));
+  });
+
+  test('setting completed to true sets completionDate to today', () {
+    final task = Task('Foo');
+    expect(task.completionDate, isNull);
+    task.completed = true;
+    final now = DateTime.now();
+    expect(task.completionDate, DateTime(now.year, now.month, now.day));
+  });
+
+  test('setting completed to false clears completionDate', () {
+    final task = Task('Foo', completed: true);
+    expect(task.completionDate, isNotNull);
+    task.completed = false;
+    expect(task.completionDate, isNull);
+  });
+
+  test('parsed dateless completed task keeps null completionDate', () {
+    final task = Task.fromText('x completed task');
+    expect(task.completed, true);
+    expect(task.completionDate, isNull);
+  });
+
+  test('completed task with completion date is parsed and serialized', () {
+    final task = Task.fromText('x 2011-03-02 Review pull request');
+
+    expect(task.completed, true);
+    expect(task.completionDate, DateTime(2011, 3, 2));
+    expect(task.creationDate, isNull);
+    expect(task.title, 'Review pull request');
+    expect(task.toText(), 'x 2011-03-02 Review pull request');
+  });
+
+  test('completed task with both dates is parsed and serialized', () {
+    final task = Task.fromText('x 2011-03-02 2011-03-01 Review pull request');
+
+    expect(task.completed, true);
+    expect(task.completionDate, DateTime(2011, 3, 2));
+    expect(task.creationDate, DateTime(2011, 3, 1));
+    expect(task.title, 'Review pull request');
+    expect(task.toText(), 'x 2011-03-02 2011-03-01 Review pull request');
+  });
 }
