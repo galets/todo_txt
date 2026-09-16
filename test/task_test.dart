@@ -33,4 +33,11 @@ void main() {
     expect(task.title, contains('@'));
     expect(task.title, contains('+'));
   });
+
+  test('lone x is not a completed task (spec: x must be followed by a space)', () {
+    final task = Task.fromText('x');
+
+    expect(task.completed, false);
+    expect(task.title, 'x');
+  });
 }

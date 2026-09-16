@@ -38,12 +38,13 @@ class Task {
     var contexts = <String>[];
     var params = <String, String>{};
 
-    // if completed
-    if (elements[0] == 'x') {
+    // if completed: 'x' must be followed by a space (spec Rule 1),
+    // so a lone 'x' with nothing after it is not a completed task.
+    if (elements[0] == 'x' && elements.length > 1) {
       completed = true;
       elements.removeAt(0);
       // followed by completion Date
-      if (isDateString(elements[0])) {
+      if (elements.isNotEmpty && isDateString(elements[0])) {
         completionDate = DateTime.tryParse(elements[0]);
         elements.removeAt(0);
       }
