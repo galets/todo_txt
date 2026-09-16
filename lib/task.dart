@@ -1,21 +1,42 @@
 import 'package:todo_txt/helpers.dart';
 
+/// Matches a `key:value` metadata tag; key starts with a letter (spec metadata).
 final RegExp metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
+
+/// Matches a single A–Z letter for priority / preserved `pri` values.
 final RegExp priorityRegex = RegExp(r'^[A-Za-z]$');
+
+/// Matches a date-like `YYYY-M-D` token; validated by [parseStrictDate].
 final RegExp dateLikeRegex = RegExp(r'^\d{4}-\d{1,2}-\d{1,2}$');
 
+/// A single todo.txt task line (spec Rules 1–3 + completed Rules 1–2).
 class Task {
   bool _completed;
+
+  /// Free-form description text of the task.
   String title;
+
   int? _priority;
+
+  /// Completion date (`x YYYY-MM-DD ...`); set to today when completed.
   DateTime? completionDate;
+
+  /// Creation date, directly after priority or leading the line.
   DateTime? creationDate;
+
+  /// Project tags without the `+` prefix (spec Rule 3).
   List<String> project;
+
+  /// Context tags without the `@` prefix (spec Rule 3).
   List<String> context;
+
+  /// Arbitrary `key:value` metadata (e.g. `due:2011-03-03`, `pri:A`).
   Map<String, String> metadata;
 
+  /// Whether the line starts with `x ` (completed Rule 1).
   bool get completed => _completed;
 
+  /// Sets completion; completing stamps today and preserves priority as `pri:A`.
   set completed(bool value) {
     final wasCompleted = _completed;
     _completed = value;
@@ -41,8 +62,10 @@ class Task {
     return DateTime(now.year, now.month, now.day);
   }
 
+  /// Priority letter `A`–`Z` (spec Rule 1, `(A)`); lowercase is uppercased.
   String? get priority => _priority == null ? null : String.fromCharCode(_priority!);
 
+  /// Sets priority; kept as `pri:A` metadata while completed.
   set priority(String? value) {
     if (value == null) {
       _priority = null;
@@ -64,6 +87,7 @@ class Task {
     }
   }
 
+  /// Creates a task; empty [title] throws [ArgumentError].
   Task(
     this.title, {
     bool completed = false,
@@ -82,20 +106,21 @@ class Task {
     this.completed = completed;
   }
 
+  /// Parses a todo.txt line into a [Task] per spec ordering and tags.
   /// check positional args and remove them from list: completed, priority, creation-date
   /// incompleted example: (A) <- Priority 2022-03-21 <- creationDate ...
   /// completed full example: x <- completed 2022-03-22 <- completionDate 2022-03-21 <-creation Date
   /// completion replaces priority because there is no real use for prio on completed todos, which can be additionally sorted by latest completed
   factory Task.fromText(String todoLine) {
-    var elements = todoLine.split(' ');
+    final elements = todoLine.split(' ');
     var completed = false;
     var title = '';
     String? priority;
     DateTime? creationDate;
     DateTime? completionDate;
-    var projects = <String>[];
-    var contexts = <String>[];
-    var params = <String, String>{};
+    final projects = <String>[];
+    final contexts = <String>[];
+    final params = <String, String>{};
 
     // if completed: 'x' must be followed by a space (spec Rule 1),
     // so a lone 'x' with nothing after it is not a completed task.
@@ -132,7 +157,7 @@ class Task {
       } else if (element.startsWith('+') && element.length > 1) {
         projects.add(element.substring(1));
       } else if (metadataRegex.hasMatch(element)) {
-        var match = metadataRegex.firstMatch(element)!;
+        final match = metadataRegex.firstMatch(element)!;
         params[match.group(1)!] = match.group(2)!;
       } else {
         title += ' $element';
@@ -168,6 +193,7 @@ class Task {
     return task;
   }
 
+  /// Returns a copy with the given fields replaced.
   Task copyWith({
     String? title,
     bool? completed,
@@ -190,6 +216,7 @@ class Task {
     );
   }
 
+  /// Serializes this task to a spec-ordered todo.txt line.
   String toText() {
     var text = '';
 
