@@ -148,9 +148,16 @@ class Task {
     }
 
     text += ' $title';
-    text += ' ${context.map((e) => '@$e').join(' ')}';
-    text += ' ${project.map((e) => '+$e').join(' ')}';
-    text += ' ${paramsToString(metadata)}';
+    if (context.isNotEmpty) {
+      text += ' ${context.map((e) => '@$e').join(' ')}';
+    }
+    if (project.isNotEmpty) {
+      text += ' ${project.map((e) => '+$e').join(' ')}';
+    }
+    final meta = paramsToString(metadata);
+    if (meta.isNotEmpty) {
+      text += ' $meta';
+    }
 
     text = text.trim();
     return text;

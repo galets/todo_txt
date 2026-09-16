@@ -72,4 +72,11 @@ void main() {
     expect(() => task.priority = '(A)', throwsArgumentError);
     expect(() => Task('x', priority: 'AB'), throwsArgumentError);
   });
+
+  test('toText uses single spaces when context list is empty (spec ordering)',
+      () {
+    final task = Task('Hello', project: ['P']);
+
+    expect(task.toText(), 'Hello +P');
+  });
 }
