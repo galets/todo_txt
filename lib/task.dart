@@ -1,13 +1,8 @@
 import 'package:todo_txt/helpers.dart';
 
-/// Matches a `key:value` metadata tag; key starts with a letter (spec metadata).
-final RegExp metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
-
-/// Matches a single A–Z letter for priority / preserved `pri` values.
-final RegExp priorityRegex = RegExp(r'^[A-Za-z]$');
-
-/// Matches a date-like `YYYY-M-D` token; validated by [parseStrictDate].
-final RegExp dateLikeRegex = RegExp(r'^\d{4}-\d{1,2}-\d{1,2}$');
+final RegExp _metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
+final RegExp _priorityRegex = RegExp(r'^[A-Za-z]$');
+final RegExp _dateLikeRegex = RegExp(r'^\d{4}-\d{1,2}-\d{1,2}$');
 
 /// A single todo.txt task line (spec Rules 1–3 + completed Rules 1–2).
 class Task {
@@ -74,7 +69,7 @@ class Task {
       }
       return;
     }
-    if (!priorityRegex.hasMatch(value)) {
+    if (!_priorityRegex.hasMatch(value)) {
       throw ArgumentError.value(
         value,
         'priority',
@@ -128,7 +123,7 @@ class Task {
       completed = true;
       elements.removeAt(0);
       // followed by completion Date
-      if (elements.isNotEmpty && (isDateString(elements[0]) || dateLikeRegex.hasMatch(elements[0]))) {
+      if (elements.isNotEmpty && (isDateString(elements[0]) || _dateLikeRegex.hasMatch(elements[0]))) {
         completionDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
@@ -143,7 +138,7 @@ class Task {
     // For completed tasks it requires a completion date before it.
     // A date-like token in this slot that is not a valid YYYY-MM-DD
     // date is a malformed date, not title text.
-    if (elements.isNotEmpty && (isDateString(elements[0]) || dateLikeRegex.hasMatch(elements[0]))) {
+    if (elements.isNotEmpty && (isDateString(elements[0]) || _dateLikeRegex.hasMatch(elements[0]))) {
       if (!completed || completionDate != null) {
         creationDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
@@ -156,8 +151,8 @@ class Task {
         contexts.add(element.substring(1));
       } else if (element.startsWith('+') && element.length > 1) {
         projects.add(element.substring(1));
-      } else if (metadataRegex.hasMatch(element)) {
-        final match = metadataRegex.firstMatch(element)!;
+      } else if (_metadataRegex.hasMatch(element)) {
+        final match = _metadataRegex.firstMatch(element)!;
         params[match.group(1)!] = match.group(2)!;
       } else {
         title += ' $element';
@@ -170,7 +165,7 @@ class Task {
     // keep a literal pri entry as plain metadata.
     if (completed) {
       final pri = params.remove('pri');
-      if (pri != null && priority == null && priorityRegex.hasMatch(pri)) {
+      if (pri != null && priority == null && _priorityRegex.hasMatch(pri)) {
         priority = pri.toUpperCase();
       }
     }
