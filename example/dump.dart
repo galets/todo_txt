@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:todo_txt/helpers.dart';
-import 'package:todo_txt/task.dart';
+import 'package:todo_txt/todo_txt.dart';
 
 /// Reads todo.txt lines from the file given as the first argument,
 /// or from stdin when no argument is provided, and dumps each task as:
@@ -12,17 +12,16 @@ import 'package:todo_txt/task.dart';
 ///
 /// where only non-null / non-empty fields are shown, including metadata.
 Future<void> main(List<String> args) async {
-  final List<String> lines;
+  final Stream<String> source;
   if (args.isNotEmpty) {
-    lines = await File(args[0]).readAsLines();
+    source = File(args[0]).openRead().transform(utf8.decoder).transform(const LineSplitter());
   } else {
-    lines = await stdin.transform(utf8.decoder).transform(const LineSplitter()).toList();
+    source = stdin.transform(utf8.decoder).transform(const LineSplitter());
   }
 
-  for (final rawLine in lines) {
-    final line = rawLine.trim();
-    if (line.isEmpty) continue;
-    final task = Task.fromText(line);
+  final tasks = await TodoTxt.load(source);
+
+  for (final task in tasks) {
 
     print(task.toText());
 

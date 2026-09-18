@@ -1,50 +1,56 @@
-import 'dart:developer';
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:test/test.dart';
 import 'package:todo_txt/todo_txt.dart';
 
-const windowsPath = '.\\test\\resources\\todo.txt';
-const path = './test/resources/todo.txt';
-
-void main() {
-  test('Try create a new TodoTxt file', () {
-    cleanupFile();
-    final tasks = [Task('Task 1')];
-
-    final todo = TodoTxt.create(tasks: tasks, path: path);
-
-    expect(todo.tasks, tasks);
-    expect(todo.path, path);
-  });
-
-  test('Try create a new TodoTxt file without .txt ending', () {
-    final tasks = [Task('Task 1')];
-
-    expect(
-      () => TodoTxt.create(
-        tasks: tasks,
-        path: 'C:\\Users\\Adrian\\Projects\\todo_txt\\test\\resources\\todo.csv',
-      ),
-      throwsA(isA<FormatException>()),
-    );
-  });
-
-  test('read from file', () {
-    final tasks = [Task('Task 1')];
-
-    final todo = TodoTxt.readFromFile(path: path);
-
-    expect(todo.path, path);
-    expect(todo.tasks.length, tasks.length);
-    expect(todo.tasks[0].title, 'Task 1');
-  });
+/// In-memory IOSink adapter for tests.
+class _MemorySink implements IOSink {
+  final StringBuffer buffer = StringBuffer();
+  @override
+  Encoding encoding = utf8;
+  @override
+  void write(Object? obj) => buffer.write(obj);
+  @override
+  void writeln([Object? obj = '']) => buffer.writeln(obj);
+  @override
+  void writeAll(Iterable<Object?> objects, [String separator = '']) => buffer.writeAll(objects, separator);
+  @override
+  void writeCharCode(int charCode) => buffer.writeCharCode(charCode);
+  @override
+  void add(List<int> data) {}
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) {}
+  @override
+  Future<void> addStream(Stream<List<int>> stream) async {}
+  @override
+  Future<void> flush() async {}
+  @override
+  Future<void> close() async {}
+  @override
+  Future<void> get done => Future.value();
 }
 
-void cleanupFile() {
-  try {
-    File(path).deleteSync();
-  } on Exception catch (e) {
-    log(e.toString());
-  }
+void main() {
+  group('TodoTxt', () {
+    test('load skips blanks and trims', () async {
+      final tasks = await TodoTxt.load(
+        Stream.fromIterable(['Task 1', '', '  Task 2  ']),
+      );
+      expect(tasks.map((t) => t.title), ['Task 1', 'Task 2']);
+    });
+
+    test('save writes lines', () async {
+      final sink = _MemorySink();
+      await TodoTxt.save([Task('Task 1'), Task('Task 2')], sink);
+      expect(sink.buffer.toString(), 'Task 1\nTask 2\n');
+    });
+
+    test('save empty writes nothing', () async {
+      final sink = _MemorySink();
+      await TodoTxt.save([], sink);
+      expect(sink.buffer.toString(), '');
+    });
+  });
 }
