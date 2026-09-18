@@ -35,7 +35,9 @@ String paramsToString(Map<String, String> params) {
   return strParams.trim();
 }
 
-DateTime _parseStrictDate(String date) {
+@visibleForTesting
+/// Parses [date] as strict `YYYY-MM-DD`, throwing [FormatException] if invalid.
+DateTime parseStrictDate(String date) {
   if (!_dateRegex.hasMatch(date)) {
     throw FormatException('Invalid date', date);
   }
@@ -174,7 +176,7 @@ class Task {
       elements.removeAt(0);
       // followed by completion Date
       if (elements.isNotEmpty && (_dateRegex.hasMatch(elements[0]) || _dateLikeRegex.hasMatch(elements[0]))) {
-        completionDate = _parseStrictDate(elements[0]);
+        completionDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
       // else if prio
@@ -190,7 +192,7 @@ class Task {
     // date is a malformed date, not title text.
     if (elements.isNotEmpty && (_dateRegex.hasMatch(elements[0]) || _dateLikeRegex.hasMatch(elements[0]))) {
       if (!completed || completionDate != null) {
-        creationDate = _parseStrictDate(elements[0]);
+        creationDate = parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
     }

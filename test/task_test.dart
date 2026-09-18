@@ -261,6 +261,37 @@ void main() {
     expect(task.metadata.containsKey('pri'), false);
   });
 
+  test('parseStrictDate parses valid YYYY-MM-DD date', () {
+    expect(parseStrictDate('2011-03-02'), DateTime(2011, 3, 2));
+  });
+
+  test('parseStrictDate accepts leap day on leap year', () {
+    expect(parseStrictDate('2024-02-29'), DateTime(2024, 2, 29));
+  });
+
+  test('parseStrictDate rejects non-leap Feb 29', () {
+    expect(() => parseStrictDate('2023-02-29'), throwsFormatException);
+  });
+
+  test('parseStrictDate rejects nonexistent calendar dates', () {
+    expect(() => parseStrictDate('2011-02-31'), throwsFormatException);
+    expect(() => parseStrictDate('2011-04-31'), throwsFormatException);
+    expect(() => parseStrictDate('2011-00-10'), throwsFormatException);
+    expect(() => parseStrictDate('2011-13-01'), throwsFormatException);
+    expect(() => parseStrictDate('2011-01-00'), throwsFormatException);
+    expect(() => parseStrictDate('2011-01-32'), throwsFormatException);
+  });
+
+  test('parseStrictDate rejects malformed format', () {
+    expect(() => parseStrictDate('2011-3-2'), throwsFormatException);
+    expect(() => parseStrictDate('2011-03-2'), throwsFormatException);
+    expect(() => parseStrictDate('11-03-02'), throwsFormatException);
+    expect(() => parseStrictDate('not-a-date'), throwsFormatException);
+    expect(() => parseStrictDate(' 2011-03-02'), throwsFormatException);
+    expect(() => parseStrictDate('2011-03-02 '), throwsFormatException);
+    expect(() => parseStrictDate(''), throwsFormatException);
+  });
+
   test('uncompleting a task removes pri metadata', () {
     final task = Task.fromText('x 2026-05-03 2026-05-01 pri:A Spray mosquito poison');
     task.completed = false;
