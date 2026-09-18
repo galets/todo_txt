@@ -26,8 +26,6 @@ lib/
   task.dart     — Task model: completed, title, priority (int char-code),
                   completionDate, creationDate, project, context, metadata
                   + fromText / toText / copyWith
-  helpers.dart  — dateRegex / isDateString / isPriorityString /
-                  dateToDateString / paramsToString / pathToPlatformPath
 test/
   todo_txt_test.dart, helpers_test.dart, resources/
 pubspec.yaml, analysis_options.yaml, CHANGELOG.md, README.md, LICENSE

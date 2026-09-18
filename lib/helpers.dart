@@ -1,5 +1,3 @@
-import 'dart:io';
-
 /// Returns true if [prioString] is a priority `(A)`–`(Z)` (spec Rule 1, uppercase only).
 bool isPriorityString(String prioString) {
   return prioString.length == 3 &&
@@ -19,9 +17,4 @@ String paramsToString(Map<String, String> params) {
   var strParams = '';
   params.forEach((key, value) => strParams += ' $key:$value');
   return strParams.trim();
-}
-
-/// Normalizes [path] separators to the current platform separator.
-String pathToPlatformPath(String path) {
-  return path.replaceAll(RegExp(r'\\|\/'), Platform.pathSeparator);
 }
