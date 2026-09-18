@@ -1,8 +1,29 @@
+import 'package:meta/meta.dart';
 import 'package:todo_txt/helpers.dart';
 
+final RegExp _dateRegex = RegExp(r'^(\d{4})[\-](0[1-9]|1[012])[\-](0[1-9]|[12][0-9]|3[01])$');
 final RegExp _metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
 final RegExp _priorityRegex = RegExp(r'^[A-Za-z]$');
 final RegExp _dateLikeRegex = RegExp(r'^\d{4}-\d{1,2}-\d{1,2}$');
+
+/// Test-only accessor for [_dateRegex]; do not use outside tests.
+@visibleForTesting
+bool isDateString(String date) => _dateRegex.hasMatch(date);
+
+DateTime _parseStrictDate(String date) {
+  if (!_dateRegex.hasMatch(date)) {
+    throw FormatException('Invalid date', date);
+  }
+  final parts = date.split('-');
+  final year = int.parse(parts[0]);
+  final month = int.parse(parts[1]);
+  final day = int.parse(parts[2]);
+  final parsed = DateTime(year, month, day);
+  if (parsed.year != year || parsed.month != month || parsed.day != day) {
+    throw FormatException('Invalid date', date);
+  }
+  return parsed;
+}
 
 /// A single todo.txt task line (spec Rules 1–3 + completed Rules 1–2).
 class Task {
@@ -127,8 +148,8 @@ class Task {
       completed = true;
       elements.removeAt(0);
       // followed by completion Date
-      if (elements.isNotEmpty && (isDateString(elements[0]) || _dateLikeRegex.hasMatch(elements[0]))) {
-        completionDate = parseStrictDate(elements[0]);
+      if (elements.isNotEmpty && (_dateRegex.hasMatch(elements[0]) || _dateLikeRegex.hasMatch(elements[0]))) {
+        completionDate = _parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
       // else if prio
@@ -142,9 +163,9 @@ class Task {
     // For completed tasks it requires a completion date before it.
     // A date-like token in this slot that is not a valid YYYY-MM-DD
     // date is a malformed date, not title text.
-    if (elements.isNotEmpty && (isDateString(elements[0]) || _dateLikeRegex.hasMatch(elements[0]))) {
+    if (elements.isNotEmpty && (_dateRegex.hasMatch(elements[0]) || _dateLikeRegex.hasMatch(elements[0]))) {
       if (!completed || completionDate != null) {
-        creationDate = parseStrictDate(elements[0]);
+        creationDate = _parseStrictDate(elements[0]);
         elements.removeAt(0);
       }
     }

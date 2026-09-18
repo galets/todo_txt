@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 import 'package:todo_txt/helpers.dart';
+import 'package:todo_txt/task.dart';
 
 void main() {
   test('isPriorityString validPrioString returnTrue', () {
