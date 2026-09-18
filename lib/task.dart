@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'package:todo_txt/helpers.dart';
 
 final RegExp _dateRegex = RegExp(r'^(\d{4})[\-](0[1-9]|1[012])[\-](0[1-9]|[12][0-9]|3[01])$');
 final RegExp _metadataRegex = RegExp(r'^([A-Za-z][^:\s]*):(\S+)$');
@@ -8,7 +7,33 @@ final RegExp _dateLikeRegex = RegExp(r'^\d{4}-\d{1,2}-\d{1,2}$');
 
 /// Test-only accessor for [_dateRegex]; do not use outside tests.
 @visibleForTesting
-bool isDateString(String date) => _dateRegex.hasMatch(date);
+bool isDateString(String date) {
+  return _dateRegex.hasMatch(date);
+}
+
+/// Returns true if [prioString] is a priority `(A)`–`(Z)` (spec Rule 1, uppercase only).
+@visibleForTesting
+bool isPriorityString(String prioString) {
+  return prioString.length == 3 &&
+      prioString[0] == '(' &&
+      prioString[2] == ')' &&
+      prioString.codeUnitAt(1) >= 65 &&
+      prioString.codeUnitAt(1) <= 90;
+}
+
+/// Formats [date] as `YYYY-MM-DD` for creation/completion dates.
+@visibleForTesting
+String dateToDateString(DateTime date) {
+  return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+}
+
+/// Serializes [params] as space-separated `key:value` metadata tags.
+@visibleForTesting
+String paramsToString(Map<String, String> params) {
+  var strParams = '';
+  params.forEach((key, value) => strParams += ' $key:$value');
+  return strParams.trim();
+}
 
 DateTime _parseStrictDate(String date) {
   if (!_dateRegex.hasMatch(date)) {

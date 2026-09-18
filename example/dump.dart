@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:todo_txt/helpers.dart';
 import 'package:todo_txt/todo_txt.dart';
 
 /// Reads todo.txt lines from the file given as the first argument,
@@ -22,6 +21,8 @@ Future<void> main(List<String> args) async {
   final tasks = await TodoTxt.load(source);
 
   for (final task in tasks) {
+    String formatDate(DateTime date) =>
+        '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
     print(task.toText());
 
@@ -30,10 +31,10 @@ Future<void> main(List<String> args) async {
     field('completed', task.completed.toString());
     if (task.priority != null) field('priority', task.priority!);
     if (task.completionDate != null) {
-      field('completionDate', dateToDateString(task.completionDate!));
+      field('completionDate', formatDate(task.completionDate!));
     }
     if (task.creationDate != null) {
-      field('creationDate', dateToDateString(task.creationDate!));
+      field('creationDate', formatDate(task.creationDate!));
     }
     field('title', task.title);
     if (task.context.isNotEmpty) field('context', task.context.join(', '));
