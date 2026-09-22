@@ -1,6 +1,6 @@
 name: todo_txt
 description: Implementation of todo.txt standard for storing todos in plain *.txt files.
-version: 0.1.0
+version: 1.0.0
 repository: https://github.com/galets/todo_txt
 
 environment:
